@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 
-// SSR 방지
+// ✅ SSR 방지 + 경로 수정
 const KakaoMap = dynamic(() => import("../components/KakaoMap"), {
   ssr: false,
 });

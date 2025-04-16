@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Script from "next/script"; // ✅ 공식 Script 컴포넌트 import
+import Script from "next/script";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -25,15 +25,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <head />
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {/* ✅ 카카오 지도 스크립트 로딩 (권장 방식) */}
+      <head>
         <Script
           src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=fe0ceddbeea976ed8c1b8cfdf453c747&autoload=false&libraries=services"
           strategy="beforeInteractive"
         />
+      </head>
+      <body
+        style={{ height: "100vh", margin: 0 }}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         {children}
       </body>
     </html>
