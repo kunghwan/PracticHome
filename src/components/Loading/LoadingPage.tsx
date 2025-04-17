@@ -31,9 +31,9 @@ const LoadingPage = () => {
   if (!loading.isLoading) return null;
 
   return (
-    <div className="fixed top-0 left-0 w-full h-full bg-white/80 z-[9999] flex flex-col items-center justify-center ">
-      <CgSpinner className="animate-spin text-4xl mb-2 " />
-      <p className="text-xl font-bold">{loading.message}</p>
+    <div className="fixed inset-0 z-[9999] bg-white/80 flex items-center justify-center flex-col">
+      <CgSpinner className="animate-spin text-2xl mb-2" />
+      <p className="text-3xl font-bold">{loading.message}</p>
     </div>
   );
 };
