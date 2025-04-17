@@ -5,11 +5,13 @@ interface ValidationResult {
 }
 
 interface User {
+  userId: string; // 유저 아이디
   email: string;
   password: string;
   name: string;
   tel: string;
   birth: string;
+  agreeLocation: boolean; // 위치정보 제공 동의 여부 (체크박스)
 }
 //  로딩 상태
 interface LoadingState {
