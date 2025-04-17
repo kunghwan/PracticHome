@@ -20,136 +20,187 @@ type Place = {
 const KakaoMap = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<any>(null);
-  const [keyword, setKeyword] = useState("카페");
   const [places, setPlaces] = useState<Place[]>([]);
-  const [selected, setSelected] = useState<Place | null>(null);
+  const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
+  const [keyword, setKeyword] = useState("관광지");
+  const [inputValue, setInputValue] = useState("관광지");
+  const markers = useRef<any[]>([]);
 
-  // ✅ 지도 객체 생성
+  // ✅ 지도 초기화
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (
-        typeof window !== "undefined" &&
-        window.kakao &&
-        window.kakao.maps &&
-        window.kakao.maps.services
-      ) {
-        clearInterval(interval);
+    const initMap = () => {
+      if (!mapRef.current) return;
 
-        window.kakao.maps.load(() => {
-          if (!mapRef.current) {
-            console.warn("❌ mapRef.current 없음");
-            return;
-          }
+      const center = new window.kakao.maps.LatLng(36.3324, 127.4345);
+      const mapInstance = new window.kakao.maps.Map(mapRef.current, {
+        center,
+        level: 7,
+      });
 
-          const mapInstance = new window.kakao.maps.Map(mapRef.current, {
-            center: new window.kakao.maps.LatLng(37.5665, 126.978),
-            level: 4,
-          });
+      setMap(mapInstance);
+    };
 
-          console.log("🗺️ 지도 생성 완료");
-          setMap(mapInstance);
-        });
-      }
-    }, 300);
-
-    return () => clearInterval(interval);
+    if (window.kakao && window.kakao.maps) {
+      window.kakao.maps.load(initMap);
+    }
   }, []);
 
-  // ✅ 장소 검색 및 마커 표시
-  useEffect(() => {
-    if (!map || !keyword) return;
+  // ✅ 장소 검색
+  const searchPlaces = (keyword: string) => {
+    if (!map) return;
 
     const { maps } = window.kakao;
     const ps = new maps.services.Places();
-    const bounds = new maps.LatLngBounds();
 
-    const markers: any[] = [];
+    const bounds = new maps.LatLngBounds(
+      new maps.LatLng(36.175, 127.29),
+      new maps.LatLng(36.48, 127.58)
+    );
 
-    ps.keywordSearch(keyword, (data: Place[], status: string) => {
-      if (status !== maps.services.Status.OK) return;
+    ps.keywordSearch(
+      keyword,
+      (data: Place[], status: string) => {
+        if (status !== maps.services.Status.OK) return;
 
-      setPlaces(data);
+        setPlaces(data);
+        markers.current.forEach((m) => m.setMap(null));
+        markers.current = [];
 
-      markers.forEach((m) => m.setMap(null));
-      markers.length = 0;
+        data.forEach((place) => {
+          const position = new maps.LatLng(Number(place.y), Number(place.x));
+          const marker = new maps.Marker({ position, map });
 
-      data.forEach((place) => {
-        const position = new maps.LatLng(place.y, place.x);
-        bounds.extend(position);
+          maps.event.addListener(marker, "click", () => {
+            handlePlaceClick(place);
+          });
 
-        const marker = new maps.Marker({
-          map,
-          position,
+          markers.current.push(marker);
         });
+      },
+      { bounds }
+    );
+  };
 
-        maps.event.addListener(marker, "click", () => {
-          setSelected(place);
-        });
-
-        markers.push(marker);
-      });
-
-      map.setBounds(bounds);
-    });
+  useEffect(() => {
+    if (keyword) {
+      searchPlaces(keyword);
+    }
   }, [map, keyword]);
 
+  // ✅ 장소 클릭 시 지도 이동 + 정보 패널 업데이트
+  const handlePlaceClick = (place: Place) => {
+    if (!map) return;
+
+    const latlng = new window.kakao.maps.LatLng(
+      Number(place.y),
+      Number(place.x)
+    );
+    map.panTo(latlng);
+    setSelectedPlace(place); // 왼쪽 상세정보 표시
+  };
+
+  const handleSearch = () => {
+    setKeyword(inputValue.trim());
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") handleSearch();
+  };
+
   return (
-    <div style={{ display: "flex" }}>
-      {/* 왼쪽 정보창 */}
-      <aside
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+      {/* 검색창 */}
+      <div
         style={{
-          width: "300px",
-          padding: "20px",
-          borderRight: "1px solid #ddd",
-          backgroundColor: "#f4f4f4",
+          padding: 10,
+          borderBottom: "1px solid #ccc",
+          background: "#fafafa",
         }}
       >
-        <h2>📍 장소 정보</h2>
-        {selected ? (
-          <div>
-            <h3>{selected.place_name}</h3>
-            <p>{selected.road_address_name || selected.address_name}</p>
-            <p>📞 {selected.phone || "전화번호 없음"}</p>
-          </div>
-        ) : (
-          <p>마커를 클릭해보세요</p>
-        )}
-      </aside>
+        <input
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="장소 검색 (예: 공원, 박물관, 맛집)"
+          style={{ padding: 8, fontSize: 16, width: "70%", marginRight: 10 }}
+        />
+        <button
+          onClick={handleSearch}
+          style={{ padding: "8px 16px", fontSize: 16 }}
+        >
+          검색
+        </button>
+      </div>
 
-      {/* 지도 + 검색 */}
-      <div style={{ flex: 1 }}>
-        <div style={{ padding: 10 }}>
-          <input
-            type="text"
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
-            placeholder="검색어 입력 (예: 편의점)"
-            style={{
-              padding: 8,
-              fontSize: 16,
-              width: "70%",
-              marginRight: 8,
-              backgroundColor: "#f4f4f4",
-            }}
-          />
-          <button
-            onClick={() => setKeyword(keyword)}
-            style={{ padding: 8, fontSize: 16 }}
-          >
-            검색
-          </button>
+      {/* 지도 & 리스트 & 상세정보 */}
+      <div style={{ display: "flex", flex: 1 }}>
+        {/* 왼쪽 상세정보 패널 */}
+        <div
+          style={{
+            width: "300px",
+            height: "100%",
+            overflowY: "auto",
+            borderRight: "1px solid #ddd",
+            padding: "16px",
+            backgroundColor: "#f1f1f1",
+          }}
+        >
+          <h2>📌 상세 정보</h2>
+          {selectedPlace ? (
+            <div>
+              <strong>{selectedPlace.place_name}</strong>
+              <p>
+                {selectedPlace.road_address_name || selectedPlace.address_name}
+              </p>
+              <p>☎ {selectedPlace.phone || "전화번호 없음"}</p>
+            </div>
+          ) : (
+            <p>마커를 클릭하면 정보가 표시됩니다.</p>
+          )}
         </div>
 
-        {/* ✅ 지도 컨테이너 - 반드시 닫힘 태그 사용 */}
+        {/* 지도 */}
+        <div ref={mapRef} style={{ flex: 1, height: "100vh" }} />
+
+        {/* 오른쪽 검색 결과 리스트 */}
         <div
-          ref={mapRef}
           style={{
-            width: "100%",
-            height: "500px",
-            minHeight: "400px",
-            backgroundColor: "#eee", // 배경색은 디버깅용
+            width: "300px",
+            height: "100%",
+            overflowY: "auto",
+            borderLeft: "1px solid #ddd",
+            padding: "16px",
+            backgroundColor: "#f9f9f9",
           }}
-        ></div>
+        >
+          <h2>📍 검색 결과</h2>
+          <ul style={{ listStyle: "none", padding: 0 }}>
+            {places.map((place) => (
+              <li
+                key={place.id}
+                onClick={() => handlePlaceClick(place)}
+                style={{
+                  marginBottom: "16px",
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  backgroundColor: "#fff",
+                }}
+              >
+                <strong>{place.place_name}</strong>
+                <br />
+                <span style={{ fontSize: "12px" }}>
+                  {place.road_address_name || place.address_name}
+                </span>
+                <br />
+                <span style={{ fontSize: "12px", color: "#666" }}>
+                  {place.phone || "전화번호 없음"}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );
