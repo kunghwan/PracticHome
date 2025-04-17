@@ -18,7 +18,7 @@ interface FeedPageProps {
 // 포스트 하나에 대한 타입
 interface Post {
   id: string; // 게시물 고유 ID
-  userId: string; // 작성자 ID
+  uid: string; // 작성자 ID
   userNickname: string; // 작성자 닉네임
   userProfileImage: string; // 작성자 프로필 이미지 URL
   imageUrl: string | null; // 게시물 대표 이미지 URL

@@ -5,12 +5,12 @@ interface ValidationResult {
 }
 
 interface User {
-  userId: string; // 유저 아이디
-  email: string;
-  password: string;
-  name: string;
-  tel: string;
-  birth: string;
+  uid: string; // 유저 아이디
+  email: string; // 이메일
+  password: string; // 비밀번호
+  name: string; // 이름
+  tel: string; // 전화번호
+  birth: string; // 생년월일
   agreeLocation: boolean; // 위치정보 제공 동의 여부 (체크박스)
 }
 //  로딩 상태
