@@ -24,8 +24,8 @@ const KakaoMap = () => {
   const [map, setMap] = useState<any>(null); // 지도 객체 상태
   const [places, setPlaces] = useState<Place[]>([]); // 검색된 장소 목록
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null); // 마커 클릭 시 왼쪽에 표시할 장소
-  const [keyword, setKeyword] = useState("관광지"); // 실제 검색어
-  const [inputValue, setInputValue] = useState("관광지"); // 입력창에 입력 중인 값
+  const [keyword, setKeyword] = useState("맛집"); // 실제 검색어
+  const [inputValue, setInputValue] = useState("맛집"); // 입력창에 입력 중인 값
   const markers = useRef<any[]>([]); // 생성된 마커 목록 저장
 
   // ✅ 지도 생성 useEffect (최초 1회 실행)
