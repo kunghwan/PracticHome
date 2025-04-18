@@ -24,11 +24,18 @@ interface Post {
   imageUrl: string | null; // 게시물 대표 이미지 URL
   content: string | null; // 게시물 내용 또는 설명
   lo: Location; // 장소 정보 (위치, 주소 등)
-  likes: number; // 좋아요 수
-  shares: number; // 공유 수
+  // likes: number; // 좋아요 수를 카운트하기위해 uid 좋아요를 클릭한 사람의 uid를 담음 취소하면 uid를 뺌
+  likes: Array<string>;
+  shares: Array<{ uid: string; count: number }>; // 공유 수
+  bookmarked: Array<string>;
   isLiked: boolean; // 현재 유저가 좋아요 눌렀는지 여부
   createdAt: string; // 작성일시 (ISO 8601)
 }
+
+const post1: Post = {
+  likes: ["1", "2", "3"],
+};
+
 // 지도위치 정보
 interface Location {
   latitude: number; // 위도
@@ -47,4 +54,11 @@ interface InfiniteScrollProps {
   isLoading: boolean; // 데이터 로딩 중 여부
   hasMore: boolean; // 더 불러올 게시물이 있는지
   onLoadMore: () => void; // 다음 게시물 요청 함수
+}
+
+interface Bookmark {
+  id: string; //북마크아이디
+  postId: string;
+  uid: string; // bookmark 한 사람의 아이디
+  createdAt: Date;
 }

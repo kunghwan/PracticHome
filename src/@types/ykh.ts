@@ -92,3 +92,35 @@ interface Place {
 interface PlaceFilterOption {
   minLikes?: number; // 최소 좋아요 수 필터
 }
+
+enum FBCollection {
+  POSTS = "posts",
+}
+
+enum FBCollection_POST {
+  LIKES = "likes",
+  SHARED = "shared",
+  BOOKMARKED = "bookmarked",
+}
+
+const db = {};
+
+db.collection(FBCollection.POSTS)
+  .doc(postId)
+  .collection(FBCollection_POST.LIKES)
+  .doc(userId)
+  .delete();
+
+db.collection(FBCollection.POSTS)
+  .doc(postId)
+  .collection(FBCollection_POST.LIKES)
+  .doc(userId)
+  .set({ userId });
+
+const snap = db
+  .collection(FBCollection.POSTS)
+  .doc(postId)
+  .collection(FBCollection_POST.LIKES)
+  .get();
+
+const likes = snap.docs.length;
