@@ -36,6 +36,8 @@ const post1: Post = {
   likes: ["1", "2", "3"],
 };
 
+setPost((prev) => ({ ...prev, likes: [...prev.likes, newId] }));
+
 // 지도위치 정보
 interface Location {
   latitude: number; // 위도
