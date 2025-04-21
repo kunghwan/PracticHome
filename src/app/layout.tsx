@@ -25,9 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // ✅ 👇 여기에 className 꼭 추가해야 Tailwind 다크모드 작동함
     <html lang="en" className="">
-      {/* <- 꼭 있어야 함!! */}
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-black dark:bg-black dark:text-white transition-colors`}
       >
