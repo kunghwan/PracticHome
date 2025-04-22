@@ -1,36 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { IoHome, IoMoon, IoSunny } from "react-icons/io5";
+import { useState } from "react";
 
 const Signin = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [isDarkMode]);
 
   return (
     <>
       <div className=" flex flex-col gap-y-2.5 items-center justify-center h-screen">
-        <div className=" w-100 flex justify-end gap-x-2.5 text-2xl lg:w-200">
-          <button
-            onClick={() => setIsDarkMode((prev) => !prev)}
-            className="p-3 rounded-full bg-teal-100 "
-          >
-            {isDarkMode ? <IoMoon /> : <IoSunny />}
-          </button>
-          <button className="p-3 rounded-full bg-teal-100">
-            <IoHome />
-          </button>
-        </div>
         <div className="flex flex-col gap-y-2.5">
           <input
             type="text"
