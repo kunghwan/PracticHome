@@ -1,78 +1,45 @@
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { dbService, FBCollection } from "@/lib/firebase";
+import ProfileLayout from "@/app/components/ProfileLayout";
 import { Post } from "@/types/post";
-import "../../globals.css";
-import { RxViewNone } from "react-icons/rx";
 
-const MePage = ({ posts }: { posts: Post[] }) => {
-  if (!posts || posts.length === 0) {
-    return <div>게시물이 없습니다.</div>;
+const MePage = async () => {
+  const currentUserUID = "tes1"; // 현재 로그인한 사용자의 UID (예제)
+  const posts: Post[] = [];
+
+  try {
+    // Firestore에서 현재 사용자의 게시물 가져오기
+    const postsRef = collection(dbService, FBCollection.POSTS); // FBCollection.POSTS 사용
+    const q = query(postsRef, where("uid", "==", currentUserUID));
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach((doc) => {
+      posts.push({ id: doc.id, ...doc.data() } as Post);
+    });
+
+    // 데이터가 없을 경우 처리
+    if (posts.length === 0) {
+      return (
+        <div className="flex justify-center items-center h-screen">
+          게시물이 없습니다.
+        </div>
+      );
+    }
+  } catch (error) {
+    console.error("Firestore 데이터 가져오기 오류:", error);
+    return (
+      <div className="flex justify-center items-center h-screen">
+        데이터를 불러오는 중 오류가 발생했습니다.
+      </div>
+    );
   }
 
-  return (
-    <div className="flex flex-col w-full h-screen">
-      <div className="flex flex-col m-10 mx-auto">
-        <div className="flex m-10 mb-0 pr-20 pl-20 gap-2.5 justify-center ">
-          <img
-            src={posts[0].userProfileImage}
-            alt={`${posts[0].userNickname}'s profile`}
-            className="w-40 h-40 rounded-full bg-gray-600 sm:x-auto"
-          />
-          <div className="ml-10 w-120 flex-col flex flex-1 ">
-            <p className="flex justify-between">
-              <h1 className="font-medium text-4xl p-1">
-                {posts[0].userNickname}
-              </h1>
-              {posts[0] && <button>ooo</button>}
-            </p>
-            <div className="flex ml-2.5 gap-5">
-              <p className="flex gap-2.5 p-2.5">
-                게시물 <p>{posts.length}</p>
-              </p>
-              <p className="flex gap-2.5 p-2.5">
-                구독수 <p>{posts[0].shares.length}</p>
-              </p>
-            </div>
-            <p className="pb-5 text-xl">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo
-              molestias quibusdam cum id assumenda nulla neque voluptas sint
-              deserunt aliquam veniam consequatur cupiditate ipsum, aut impedit
-              iure dolorum libero et.
-            </p>
-          </div>
-        </div>
-        <div className="flex text-2xl p-2.5 ml-30 mr-30">#tag1 #tag2 </div>
-      </div>
-
-      <div className="flex border-t pt-10 border-blue-200 lg:w-[1024px] mx-auto">
-        <ul className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1">
-          {posts.map((post) => (
-            <li key={post.id} className="border">
-              <div>
-                {post.imageUrl ? (
-                  <p className="flex justify-center items-center:">
-                    <img
-                      src={post.imageUrl}
-                      alt="Post image"
-                      className="w-full h-96 object-cover mb-2.5"
-                    />
-                  </p>
-                ) : (
-                  <p className="flex justify-center items-center">
-                    <RxViewNone className=" w-96 h-96 object-cover rounded-lg mb-2.5" />
-                  </p>
-                )}
-                <div>
-                  <h3>{post.content}</h3>
-                  <p>좋아요 수: {post.likes.length}</p>
-                  <p>공유 수: {post.shares.length}</p>
-                  <p>위치: {posts[0].lo.address || "위치 정보 없음"}</p>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
+  return <ProfileLayout posts={posts} isMyPage={true} />;
 };
 
 export default MePage;
+{
+  /* <button className="absolute inset-0 flex items-center justify-center bg-gray-200 bg-opacity-30 text-gray-900 text-sm font-bold rounded-full opacity-0 hover:opacity-50 transition-opacity">
+수정하기
+</button> */
+}

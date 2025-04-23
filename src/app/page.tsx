@@ -1,7 +1,9 @@
-import Navbar from "@/components/features/navber/Navbar";
-
 const page = () => {
-  return <div>page</div>;
+  return (
+    <div>
+      <p>page</p>
+    </div>
+  );
 };
 
 export default page;
