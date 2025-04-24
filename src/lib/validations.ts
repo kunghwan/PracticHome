@@ -27,6 +27,7 @@ export async function validateEmail(
 // 생년월일 유효성
 export function validateBirth(birth: string): string | null {
   const onlyNumber = /^\d+$/;
+
   if (!onlyNumber.test(birth)) return "숫자만 입력해주세요";
   if (birth.length < 8) return "생년월일을 8자리 입력하세요";
   return null;
