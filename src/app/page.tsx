@@ -1,8 +1,10 @@
+import MapPage from "./map/page";
+
 const page = () => {
   return (
-    <div>
-      <p>page</p>
-    </div>
+    <>
+      <MapPage />
+    </>
   );
 };
 
