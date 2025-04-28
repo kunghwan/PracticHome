@@ -11,15 +11,17 @@ export function validateName(name: string): string | null {
 //  이메일 유효성 + 중복 검사
 export async function validateEmail(
   email: string,
-  checkDuplicate: (email: string) => Promise<boolean>
+  checkDuplicate?: (email: string) => Promise<boolean>
 ): Promise<string | null> {
   if (!email.includes("@")) return "email@email.com 형식으로 입력해주세요";
 
   const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
   if (!regex.test(email)) return "잘못된 이메일 형식입니다";
 
-  const isDuplicate = await checkDuplicate(email);
-  if (isDuplicate) return "중복되었습니다.";
+  if (checkDuplicate) {
+    const isDuplicate = await checkDuplicate(email);
+    if (isDuplicate) return "중복되었습니다.";
+  }
 
   return null;
 }
@@ -27,7 +29,6 @@ export async function validateEmail(
 // 생년월일 유효성
 export function validateBirth(birth: string): string | null {
   const onlyNumber = /^\d+$/;
-
   if (!onlyNumber.test(birth)) return "숫자만 입력해주세요";
   if (birth.length < 8) return "생년월일을 8자리 입력하세요";
   return null;
