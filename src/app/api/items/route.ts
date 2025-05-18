@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 
-const fakeItems = Array.from({ length: 100 }).map((_, idx) => ({
+const fakeItems = Array.from({ length: 1000 }).map((_, idx) => ({
   id: idx + 1,
   title: `Item ${idx + 1}`,
 }));
