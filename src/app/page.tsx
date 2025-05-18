@@ -1,7 +1,14 @@
-export default function Home() {
+import HomeHeader from "@/components/HomeHeader";
+import SearchBar from "@/components/SearchBar";
+
+const Home = () => {
   return (
-    <div className="flex items-center justify-center h-screen">
-      <h1 className="text-3xl font-bold">홈페이지</h1>
-    </div>
+    <>
+      <div>
+        <HomeHeader />
+      </div>
+      <SearchBar />
+    </>
   );
-}
+};
+export default Home;
